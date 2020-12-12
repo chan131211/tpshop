@@ -238,7 +238,7 @@ return [
     ],
     //验证码配置
     'captcha' => [
-        'length' => 5,
+        'length' => 4,
         'useCurve' => true,
         'useNoise' => true
     ]

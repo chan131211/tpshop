@@ -1,4 +1,17 @@
-
+<style type="text/css">
+    .pagination li{list-style:none;float:left;margin-left:10px;
+        padding:0 10px;
+        background-color:#5a98de;
+        border:1px solid #ccc;
+        height:26px;
+        line-height:26px;
+        cursor:pointer;color:#fff;
+    }
+    .pagination li a{color:white;padding: 0;line-height: inherit;border: none;}
+    .pagination li a:hover{background-color: #5a98de;}
+    .pagination li.active{background-color:white;color:gray;}
+    .pagination li.disabled{background-color:white;color:gray;}
+</style>
     <!-- 右 -->
     <div class="content">
         <div class="header">
@@ -7,10 +20,10 @@
 
         <div class="well">
             <!-- search button -->
-            <form action="" method="get" class="form-search">
+            <form action="{:url('admin/goods/index')}" method="get" class="form-search">
                 <div class="row-fluid" style="text-align: left;">
                     <div class="pull-left span4 unstyled">
-                        <p> 商品名称：<input class="input-medium" name="" type="text"></p>
+                        <p> 商品名称：<input class="input-medium" name="keyword" value="{$Request.param.keyword}" type="text"></p>
                     </div>
                 </div>
                 <button type="submit" class="btn">查找</button>
@@ -49,15 +62,8 @@
                 </tbody>
             </table>
             <!-- pagination -->
-            <div class="pagination">
-                <ul>
-                    <li><a href="#">Prev</a></li>
-                    <li><a href="#">1</a></li>
-                    <li><a href="#">2</a></li>
-                    <li><a href="#">3</a></li>
-                    <li><a href="#">4</a></li>
-                    <li><a href="#">Next</a></li>
-                </ul>
+            <div class="">
+                {$list->render()}
             </div>
         </div>
         

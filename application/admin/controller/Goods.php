@@ -13,8 +13,15 @@ class Goods extends Base
      */
     public function index()
     {
-        //
-        $list = \app\admin\model\Goods::select();
+        //查询
+        $keyword = input('keyword');
+        $where = [];
+        if (!empty($keyword)) {
+            $where['goods_name'] = ['like', "%{$keyword}%"];
+        }
+        $list = \app\admin\model\Goods::where($where)->order('id desc')->paginate(5,false, [
+            'query' => ['keyword' => $keyword]
+        ]);
         $this->assign('list', $list);
         return view();
     }
@@ -55,9 +62,33 @@ class Goods extends Base
         if ($validate !== true) {
             $this->error($validate);
         }
+
+        //商品logo上传
+        $params['goods_logo'] = $this->upload_logo();
+
         //过滤数据并添加数据库
         \app\admin\model\Goods::create($params, true);
         $this->success('添加成功','admin/goods/index');
+    }
+
+    /**
+     * 文件上传
+     */
+    private function upload_logo()
+    {
+        $file = \request()->file('logo');
+        if (empty($file)) {
+            $this->error('没有上传商品logo');
+        }
+        $info = $file->validate(['size' => 10*1024*1024, 'ext' => 'jpg,png,gif,jpeg'])->move(ROOT_PATH.'public'.DS.'uploads');
+        if ($info) {
+            //返回图片路径
+            $goods_logo = DS.'uploads'.DS.$info->getSaveName();
+            return $goods_logo;
+        }else {
+            $error_msg = $file->getError();
+            $this->error($error_msg);
+        }
     }
 
     /**
@@ -111,7 +142,21 @@ class Goods extends Base
         if ($validate !== true) {
             $this->error($validate);
         }
+
+        //判断是否更新商品logo
+        $file = \request()->file('logo');
+        if (!empty($file)) {
+            $params['goods_logo'] = $this->upload_logo();
+            //查询原有的图片路径
+            $goods = \app\admin\model\Goods::find($id);
+            $old_goods_logo = $goods['goods_logo'];
+        }
+
         \app\admin\model\Goods::update($params,['id' => $id], true);
+        //删除旧商品logo
+        if (isset($old_goods_logo)) {
+            unlink('.'.$old_goods_logo);
+        }
         $this->success('修改成功', 'admin/goods/index');
     }
 
